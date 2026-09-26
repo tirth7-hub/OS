@@ -2,7 +2,7 @@
 .set FLAGS, (1<<0 | 1<<1)
 .set CHECKSUM, -(MAGIC + FLAGS)
 
-.section .multboot
+.section .multiboot
     .long MAGIC
     .long FLAGS
     .long CHECKSUM
@@ -27,4 +27,4 @@ _stop:
 .section .bss
 .space 2*1024*1024;
 kernel_stack:
-fvdb
+
