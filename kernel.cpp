@@ -5,6 +5,15 @@ void printf(char* str){
     }
 }
 
+typedef void (*constructors)();
+extern "c" constructors start_ctors;
+extern "c" constructors end_ctors;
+extern "c" void callconstructors(){
+  for(constructors* i = &start_ctors; i != end_ctors; i++){
+    (*i)();
+  }
+}
+
 extern "C" void kernelMain(void* multboot_structure, unsigned int magicnumber){
     printf("hello world! --Tirth Patel");
 
