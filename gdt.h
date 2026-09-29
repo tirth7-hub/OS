@@ -27,8 +27,8 @@ public:
     SegmentDescriptor dataSegmentSelctor;
 
 public:
-    GlobalDescriptiveTable();
-    ~GlobalDescriptiveTable();
+    GlobalDescriptorTable();
+    ~GlobalDescriptorTable();
 
     uint16_t CodeSegmentSelctor();
     uint16_t DataSegmentSelctor();

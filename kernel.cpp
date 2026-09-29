@@ -1,5 +1,7 @@
+#include "types.h"
+#include "gdt.h"
 void printf(char* str){
-    unsigned short* VideoMemory = (unsigned short*)0xb8000; //VGA text-mode framebuffer begins at this address.    occupies 16bits=2byte
+    static uint16_t* VideoMemory = (uint16_t*)0xb8000; //VGA text-mode framebuffer begins at this address.    occupies 16bits=2byte
     for(int i=0;str[i] != '\0'; i++){//loop for travelling the whole string
         VideoMemory[i] = (VideoMemory[i] & 0xFF00) | str[i];
     }
@@ -14,8 +16,10 @@ extern "c" void callconstructors(){
   }
 }
 
-extern "C" void kernelMain(void* multboot_structure, unsigned int magicnumber){
+extern "C" void kernelMain(void* multboot_structure, uint32_t magicnumber){
     printf("hello world! --Tirth Patel");
+
+    GlobalDescriptorTable gdt;
 
     while(1);
 }
