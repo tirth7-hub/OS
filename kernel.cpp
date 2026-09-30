@@ -4,11 +4,11 @@
 
 void printf(char* str)
 {
-  static uint16_t* VideoMemory = (uint16_t*)0xb8000;
+  static uint16_t* VideoMemory = (uint16_t*)0xb8000; //VGA text-mode framebuffer begins at this address.    occupied 16bits = 2byte
 
-  static uint8_t x=0,y=0;
+  static uint8_t x=0,y=0;   //setting initial values for the SCREEN. Generally screen is 80 character wide and 25 height
 
-  for(int i = 0; str[i] != '\0'; ++i)
+  for(int i = 0; str[i] != '\0'; ++i) // loop for travelling the whole sting
   {
     switch(str[i])
     {
@@ -22,17 +22,17 @@ void printf(char* str)
         break;
     }
 
-    if(x >= 80)
+    if(x >= 80) //if one line complete(x=80) than move to next line(y++)  and set  x=0 again
     {
       x = 0;
       y++;
     }
 
-    if(y >= 25)
+    if(y >= 25) //
     {
       for(y = 0; y < 25; y++)
         for(x = 0; x < 80; x++)
-          VideoMemory[80*y+x] = (VideoMemory[80*y+x] & 0xFF00) | ' ';
+          VideoMemory[80*y+x] = (VideoMemory[80*y+x] & 0xFF00) | ' ';  //loops for setting back to all clear screen
       x = 0;
       y = 0;
     }
@@ -54,9 +54,32 @@ extern "C" void callConstructors()
 
 extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot_magic*/)
 {
-  printf("Hello World! --- http://www.AlgorithMan.de");
+  printf("Hello\n");
+  printf("good morning sir");
 
   GlobalDescriptorTable gdt;
 
   while(1);
 }
+/*      BOOT        lecture-1
+          │
+          ▼
+Bootloader / assembly
+          │
+          │ calls kernelMain()
+          ▼
+┌─────────────────┐
+│   kernelMain()  │
+└────────┬────────┘
+         │
+         ▼
+printf("hello world...")
+          │
+          ▼
+0xB8000 VGA memory
+          │
+          ▼
+VGA hardware
+          │
+          ▼
+SCREEN */

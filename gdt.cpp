@@ -7,10 +7,10 @@ GlobalDescriptorTable::GlobalDescriptorTable()
 unusedSegmentSelector(0, 0, 0),
 codeSegmentSelector(0, 64*1024*1024, 0x9A),
 dataSegmentSelector(0, 64*1024*1024, 0x92)
-{
+{                                                   //telling procerssor to used this table, beacuse processor it exceept 6 byte in row
     uint32_t i[2];
     i[1] = (uint32_t)this;
-    i[0] = sizeof(GlobalDescriptorTable) << 16;
+    i[0] = sizeof(GlobalDescriptorTable) << 16; ///swift to left
     asm volatile("lgdt (%0)": :"p" (((uint8_t *) i)+2));
 }
 
@@ -20,22 +20,23 @@ GlobalDescriptorTable::~GlobalDescriptorTable()
 
 uint16_t GlobalDescriptorTable::DataSegmentSelector()
 {
-    return (uint8_t*)&dataSegmentSelector - (uint8_t*)this;
+    return (uint8_t*)&dataSegmentSelector - (uint8_t*)this;  // here this means GlobalDescriptorTable
 }
 
 uint16_t GlobalDescriptorTable::CodeSegmentSelector()
 {
-    return (uint8_t*)&codeSegmentSelector - (uint8_t*)this;
+    return (uint8_t*)&codeSegmentSelector - (uint8_t*)this;  // here this means GlobalDescriptorTable
 }
+//setting entries
 
 GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(uint32_t base, uint32_t limit, uint8_t type)
 {
-    uint8_t* target = (uint8_t*)this;
+    uint8_t* target = (uint8_t*)this; // here this means GlobalDescriptorTable
 
     if (limit <= 65536)
     {
         // 16-bit address space
-        target[6] = 0x40;
+        target[6] = 0x40; //tell processor this is 16 bit entry
     }
     else
     {
@@ -58,18 +59,18 @@ GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(uint32_t base, uint3
         target[6] = 0xC0;
     }
 
-    // Encode the limit
+    // for limit
     target[0] = limit & 0xFF;
     target[1] = (limit >> 8) & 0xFF;
     target[6] |= (limit >> 16) & 0xF;
 
-    // Encode the base
+    // for base
     target[2] = base & 0xFF;
     target[3] = (base >> 8) & 0xFF;
     target[4] = (base >> 16) & 0xFF;
     target[7] = (base >> 24) & 0xFF;
 
-    // Type
+    // type
     target[5] = type;
 }
 
