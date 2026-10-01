@@ -1,6 +1,7 @@
 
 #include "types.h"
 #include "gdt.h"
+#include "interrupts.h"
 
 void printf(char* str)
 {
@@ -58,6 +59,9 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
   printf("good morning sir");
 
   GlobalDescriptorTable gdt;
+  InterruptManager Interrupts(&gdt) ;
+
+  Interrupts.Activate();
 
   while(1);
 }

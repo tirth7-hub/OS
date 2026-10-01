@@ -23,8 +23,8 @@ loader:
 
 
 _stop:
-    cli
-    hlt
+    cli   ;# it stand for clear interrupt flag, it is command for telling cpu to ignore the externl hardware signal
+    hlt   ;#instructuction for stoping the cpu from executing more instructuction until externel hardware interrupt
     jmp _stop
 
 
