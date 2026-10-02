@@ -1,5 +1,6 @@
-#ifndef __INTERRUPTS_H
-#define __INTERRUPTS_H
+
+#ifndef __INTERRUPTMANAGER_H
+#define __INTERRUPTMANAGER_H
 
 #include "gdt.h"
 #include "types.h"
@@ -75,7 +76,7 @@ protected:
     static void HandleException0x12();
     static void HandleException0x13();
 
-    static uint32_t HandleInterrupt(uint8_t interrupt, uint32_t esp); //esp-stack pointer
+    static uint32_t HandleInterrupt(uint8_t interrupt, uint32_t esp);
 
     Port8BitSlow programmableInterruptControllerMasterCommandPort;
     Port8BitSlow programmableInterruptControllerMasterDataPort;
@@ -83,8 +84,8 @@ protected:
     Port8BitSlow programmableInterruptControllerSlaveDataPort;
 
 public:
-    InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable* globalDescriptorTable); //constructor
-    ~InterruptManager(); //destructor
+    InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable* globalDescriptorTable);
+    ~InterruptManager();
     uint16_t HardwareInterruptOffset();
     void Activate();
     void Deactivate();

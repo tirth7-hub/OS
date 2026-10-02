@@ -1,3 +1,4 @@
+
 #include "interrupts.h"
 
 
@@ -8,19 +9,14 @@ InterruptManager::GateDescriptor InterruptManager::interruptDescriptorTable[256]
 
 
 void InterruptManager::SetInterruptDescriptorTableEntry(uint8_t interrupt,
-                                                        uint16_t CodeSegment,
-                                                        void (*handler)(), //ptr to handler
-                                                        uint8_t DescriptorPrivilegeLevel,
-                                                        uint8_t DescriptorType)
+                                                        uint16_t CodeSegment, void (*handler)(), uint8_t DescriptorPrivilegeLevel, uint8_t DescriptorType)
 {
     // address of pointer to code segment (relative to global descriptor table)
     // and address of the handler (relative to segment)
-    //setting entry to the table
     interruptDescriptorTable[interrupt].handlerAddressLowBits = ((uint32_t) handler) & 0xFFFF;
     interruptDescriptorTable[interrupt].handlerAddressHighBits = (((uint32_t) handler) >> 16) & 0xFFFF;
     interruptDescriptorTable[interrupt].gdt_codeSegmentSelector = CodeSegment;
 
-    //this is imp part
     const uint8_t IDT_DESC_PRESENT = 0x80;
     interruptDescriptorTable[interrupt].access = IDT_DESC_PRESENT | ((DescriptorPrivilegeLevel & 3) << 5) | DescriptorType;
     interruptDescriptorTable[interrupt].reserved = 0;
@@ -101,7 +97,7 @@ programmableInterruptControllerSlaveDataPort(0xA1)
 
     InterruptDescriptorTablePointer idt_pointer;
     idt_pointer.size  = 256*sizeof(GateDescriptor) - 1;
-    idt_pointer.base  = (uint32_t)interruptDescriptorTable; //pointer to interruptDescriptorTable
+    idt_pointer.base  = (uint32_t)interruptDescriptorTable;
     asm volatile("lidt %0" : : "m" (idt_pointer));
 }
 
@@ -120,7 +116,7 @@ void InterruptManager::Activate()
     //if(ActiveInterruptManager == 0)
     {
         //ActiveInterruptManager = this;
-        asm("sti");  //start interrupt
+        asm("sti");
     }
 }
 
@@ -135,7 +131,7 @@ void InterruptManager::Deactivate()
 }*/
 }
 
-uint32_t InterruptManager::HandleInterrupt(uint8_t interrupt, uint32_t esp) //layout for task switching
+uint32_t InterruptManager::HandleInterrupt(uint8_t interrupt, uint32_t esp)
 {
     char* foo = "INTERRUPT 0x00";
     char* hex = "0123456789ABCDEF";
@@ -146,4 +142,3 @@ uint32_t InterruptManager::HandleInterrupt(uint8_t interrupt, uint32_t esp) //la
 
     return esp;
 }
-
