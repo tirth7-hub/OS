@@ -2,6 +2,7 @@
 #include "types.h"
 #include "gdt.h"
 #include "interrupts.h"
+#include "keyboard.h"
 
 void printf(char* str)
 {
@@ -59,29 +60,9 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
   printf("Good Morning Sir!");
   GlobalDescriptorTable gdt;
   InterruptManager Interrupts(0x20, &gdt);
+  KeyboardDriver keyboard(&Interrupts);
   Interrupts.Activate();
 
   while(1);
 }
-/*      BOOT        lecture-1
-          │
-          ▼
-Bootloader / assembly
-          │
-          │ calls kernelMain()
-          ▼
-┌─────────────────┐
-│   kernelMain()  │
-└────────┬────────┘
-         │
-         ▼
-printf("hello world...")
-          │
-          ▼
-0xB8000 VGA memory
-          │
-          ▼
-VGA hardware
-          │
-          ▼
-SCREEN */
+
