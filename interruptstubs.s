@@ -4,7 +4,7 @@
 
 .section .text
 
-.extern _ZN16InterruptManager15HandleInterruptEhj
+.extern _ZN16InterruptManager15HandleInterruptEhj #There is a function defined somewhere else. It isn't defined in this assembly file, but I'll call it.
 
 
 .macro HandleException num
@@ -18,7 +18,7 @@ _ZN16InterruptManager19HandleException\num\()Ev:
 .macro HandleInterruptRequest num
 .global _ZN16InterruptManager26HandleInterruptRequest\num\()Ev
 _ZN16InterruptManager26HandleInterruptRequest\num\()Ev:
-    movb $\num + IRQ_BASE, (interruptnumber)
+    movb $\num + IRQ_BASE, (interruptnumber) #"movb"- Move a byte
     jmp int_bottom
 .endm
 
@@ -64,15 +64,15 @@ HandleInterruptRequest 0x31
 
 int_bottom:
 
-    # register sichern
-    pusha
+    # register register
+    pusha  #Push all general-purpose 32-bit registers onto the stack.
     pushl %ds
     pushl %es
     pushl %fs
     pushl %gs
 
-    # ring 0 segment register laden
-    #cld
+    # ring 0 segment register
+    #cld -Clear the Direction Flag.
     #mov $0x10, %eax
     #mov %eax, %eds
     #mov %eax, %ees
@@ -82,9 +82,9 @@ int_bottom:
     push (interruptnumber)
     call _ZN16InterruptManager15HandleInterruptEhj
     add %esp, 6
-    mov %eax, %esp # den stack wechseln
+    mov %eax, %esp # stack pointer
 
-    # register laden
+    # register
     pop %gs
     pop %fs
     pop %es
