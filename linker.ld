@@ -1,12 +1,12 @@
-ENTRY(loader)
-OUTPUT_FORMAT(elf32-i386)  /*this tells the linker to produce a 32bit ELf executable for the i386 architecture*/
-OUTPUT_ARCH(i386:i386)  /*we werebuilding a 32bit x86 kernel*/
+ENTRY(loader)   /*The entry point of this executable is loader*/
+OUTPUT_FORMAT(elf32-i386)  /*this create a 32-bit ELF executable for i386.*/
+OUTPUT_ARCH(i386:i386)  /*building a 32bit x86 kernel*/
 
 SECTIONS
 {
-  . = 0x0100000; /*"."-current location , start placing the kernel at address 0x100000*/
+  . = 0x0100000; /*"."-current location , start placing the kernel at address 0x0100000 = 1MiB into memory*/
 
-  .text :
+  .text :  /*collects code and related sections.*/
   {
     *(.multiboot)   /* take the .multiboot section from the input object files and place it here*/
     *(.text*)  /* "*"-serach all input object files to match*/
@@ -23,33 +23,10 @@ SECTIONS
     *(.data)
   }
 
-  .bss  :   /*this collect .bss section from your object files*/
+  .bss  :   /*this section contains uninitialized global/static data.*/
   {
     *(.bss)
   }
 
   /DISCARD/ : { *(.fini_array*) *(.comment) }  /* this section should not appear in the final kernel*/
 }
-/*                linker.ld       lecture-1
-                     │
-        ┌────────────┴────────────┐
-        │                         │
-     loader.o                  kernel.o
-        │                         │
-        ├── .multiboot            ├── .text
-        ├── .text                 ├── .rodata
-        └── ...                   └── .data
-        │                         │
-        └────────────┬────────────┘
-                     │
-                     ▼
-              ┌─────────────┐
-              │    LINKER   │
-              └──────┬──────┘
-                     │
-                     ▼
-             kernel executable
-                     │
-                     ▼
-                 0x100000
-                  (1 MiB)       */

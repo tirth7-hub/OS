@@ -1,4 +1,4 @@
-
+#this file is the bridge b/w cpu hardware and c++ code
 
 .set IRQ_BASE, 0x20
 
@@ -7,7 +7,7 @@
 .extern _ZN16InterruptManager15HandleInterruptEhj #There is a function defined somewhere else. It isn't defined in this assembly file, but I'll call it.
 
 
-.macro HandleException num
+.macro HandleException num  #this define assembly marco
 .global _ZN16InterruptManager19HandleException\num\()Ev
 _ZN16InterruptManager19HandleException\num\()Ev:
     movb $\num, (interruptnumber)
@@ -91,10 +91,10 @@ int_bottom:
     pop %ds
     popa
 
-.global _ZN16InterruptManager15InterruptIgnoreEv
+.global _ZN16InterruptManager15InterruptIgnoreEv  #mangled name
 _ZN16InterruptManager15InterruptIgnoreEv:
 
-    iret
+    iret   #the CPU automatically pushed interrupt-related state when entering the interrupt
 
 
 .data

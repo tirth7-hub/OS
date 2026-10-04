@@ -24,9 +24,9 @@ Port8Bit::~Port8Bit()
 {
 }
 
-void Port8Bit::Write(uint8_t data)
+void Port8Bit::Write(uint8_t data) //connects the nice C++ interface to the actual assembly instruction.
 {
-    Write8(portnumber, data);
+    Write8(portnumber, data);  //Port8Bit -> Write8() -> outb -> hardware
 }
 
 uint8_t Port8Bit::Read()

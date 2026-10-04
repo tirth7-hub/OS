@@ -5,13 +5,13 @@
 GlobalDescriptorTable::GlobalDescriptorTable()
 : nullSegmentSelector(0, 0, 0),
 unusedSegmentSelector(0, 0, 0),
-codeSegmentSelector(0, 64*1024*1024, 0x9A),
+codeSegmentSelector(0, 64*1024*1024, 0x9A),  //base->0 , limit-> 64MiB, access-> 0x9A
 dataSegmentSelector(0, 64*1024*1024, 0x92)
 {                                                   //telling procerssor to used this table, beacuse processor it exceept 6 byte in row
-    uint32_t i[2];
+    uint32_t i[2]; //i contain temporary values of gdt address and size of gdt
     i[1] = (uint32_t)this;
     i[0] = sizeof(GlobalDescriptorTable) << 16; ///swift to left
-    asm volatile("lgdt (%0)": :"p" (((uint8_t *) i)+2));
+    asm volatile("lgdt (%0)": :"p" (((uint8_t *) i)+2)); //"lgdt"-load the cpu's global Global Descriptor Table Register
 }
 
 GlobalDescriptorTable::~GlobalDescriptorTable()

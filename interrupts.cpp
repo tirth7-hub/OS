@@ -51,7 +51,7 @@ void InterruptManager::SetInterruptDescriptorTableEntry(uint8_t interrupt,
     interruptDescriptorTable[interrupt].gdt_codeSegmentSelector = CodeSegment;
 
     const uint8_t IDT_DESC_PRESENT = 0x80;
-    interruptDescriptorTable[interrupt].access = IDT_DESC_PRESENT | ((DescriptorPrivilegeLevel & 3) << 5) | DescriptorType;
+    interruptDescriptorTable[interrupt].access = IDT_DESC_PRESENT | ((DescriptorPrivilegeLevel & 3) << 5) | DescriptorType;  //sets the privilege level
     interruptDescriptorTable[interrupt].reserved = 0;
 }
 
@@ -116,7 +116,7 @@ programmableInterruptControllerSlaveDataPort(0xA1)
     programmableInterruptControllerSlaveCommandPort.Write(0x11);
 
     // remap
-    programmableInterruptControllerMasterDataPort.Write(hardwareInterruptOffset);
+    programmableInterruptControllerMasterDataPort.Write(hardwareInterruptOffset); //this begain pic initialization
     programmableInterruptControllerSlaveDataPort.Write(hardwareInterruptOffset+8);
 
     programmableInterruptControllerMasterDataPort.Write(0x04);
@@ -129,9 +129,9 @@ programmableInterruptControllerSlaveDataPort(0xA1)
     programmableInterruptControllerSlaveDataPort.Write(0x00);
 
     InterruptDescriptorTablePointer idt_pointer;
-    idt_pointer.size  = 256*sizeof(GateDescriptor) - 1;
-    idt_pointer.base  = (uint32_t)interruptDescriptorTable;
-    asm volatile("lidt %0" : : "m" (idt_pointer));
+    idt_pointer.size  = 256*sizeof(GateDescriptor) - 1;   //IDT-size
+    idt_pointer.base  = (uint32_t)interruptDescriptorTable; //IDT-Address
+    asm volatile("lidt %0" : : "m" (idt_pointer)); //"lidt"-Load Interrupt Descriptor Table Register
 }
 
 InterruptManager::~InterruptManager()

@@ -6,7 +6,7 @@
 
 void printf(char* str)
 {
-  static uint16_t* VideoMemory = (uint16_t*)0xb8000; //VGA text-mode framebuffer begins at this address.    occupied 16bits = 2byte
+  static uint16_t* VideoMemory = (uint16_t*)0xb8000; //0xB8000 is the conventional physical address of the VGA text-mode framebuffer. each screen cell is 16bit
 
   static uint8_t x=0,y=0;   //setting initial values for the SCREEN. Generally screen is 80 character wide and 25 height
 
@@ -19,7 +19,7 @@ void printf(char* str)
         y++;
         break;
       default:
-        VideoMemory[80*y+x] = (VideoMemory[80*y+x] & 0xFF00) | str[i];
+        VideoMemory[80*y+x] = (VideoMemory[80*y+x] & 0xFF00) | str[i]; //This preserves the upper 8 bits containing the color and replaces the lower 8 bits with the character
         x++;
         break;
     }
@@ -43,23 +43,23 @@ void printf(char* str)
 
 
 
-typedef void (*constructor)();
+typedef void (*constructor)();   //constructor is a pointer to a function returning void
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
 extern "C" void callConstructors()
 {
-  for(constructor* i = &start_ctors; i != &end_ctors; i++)
-    (*i)();
+  for(constructor* i = &start_ctors; i != &end_ctors; i++)  //loop walks through all registered constructors.
+    (*i)();  //call each constructor
 }
 
 
 
-extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot_magic*/)
+extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot_magic*/) //kernel's c++ starting point'
 {
   printf("Hello\n");
   printf("Good Morning Sir!");
   GlobalDescriptorTable gdt;
-  InterruptManager Interrupts(0x20, &gdt);
+  InterruptManager Interrupts(0x20, &gdt);  //0x20-32 decimal, This is the interrupt number where you want hardware IRQs to begin
   KeyboardDriver keyboard(&Interrupts);
   Interrupts.Activate();
 

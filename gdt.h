@@ -21,13 +21,13 @@ public:
         SegmentDescriptor(uint32_t base, uint32_t limit, uint8_t type);//constructor
         uint32_t Base();
         uint32_t Limit();
-    } __attribute__((packed));
+    } __attribute__((packed));   // this tell compiler don't insert padding bytes
 
 private:
-    SegmentDescriptor nullSegmentSelector;
-    SegmentDescriptor unusedSegmentSelector;
-    SegmentDescriptor codeSegmentSelector;
-    SegmentDescriptor dataSegmentSelector;
+    SegmentDescriptor nullSegmentSelector;  //entry 0 -> null
+    SegmentDescriptor unusedSegmentSelector; //entry 1 -> unused
+    SegmentDescriptor codeSegmentSelector;  //entry 2 -> code
+    SegmentDescriptor dataSegmentSelector;  //entry 3 -> data
 
 public:
 

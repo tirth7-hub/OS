@@ -2,7 +2,7 @@
 #include "keyboard.h"
 
 KeyboardDriver::KeyboardDriver(InterruptManager* manager)
-: InterruptHandler(manager, 0x21),
+: InterruptHandler(manager, 0x21), // 0x21 is the interriptNumber for keyboard, this act as a bridge b/w generic interrupt and specific keyboard driver
 dataport(0x60),
 commandport(0x64)
 {

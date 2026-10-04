@@ -21,26 +21,26 @@ public:
     Port8Bit(uint16_t portnumber);
     ~Port8Bit();
 
-    virtual uint8_t Read();
-    virtual void Write(uint8_t data);
+    virtual uint8_t Read();//This means the class has a function that reads one byte from the hardware port.
+    virtual void Write(uint8_t data); //This sends one byte to the hardware port.
 
 protected:
-    static inline uint8_t Read8(uint16_t _port)
+    static inline uint8_t Read8(uint16_t _port) //make variable result(c++) -> set an mrmory address in result(Asemmbly lang.) ans store that address in result -> now return result(c++)
     {
         uint8_t result;
-        __asm__ volatile("inb %1, %0" : "=a" (result) : "Nd" (_port));
+        __asm__ volatile("inb %1, %0" : "=a" (result) : "Nd" (_port));//"inb"-Read one byte from an I/O port.
         return result;
     }
 
     static inline void Write8(uint16_t _port, uint8_t _data)
     {
-        __asm__ volatile("outb %0, %1" : : "a" (_data), "Nd" (_port));
+        __asm__ volatile("outb %0, %1" : : "a" (_data), "Nd" (_port));//"outb"-Send one byte to an I/O port.
     }
 };
 
 
 
-class Port8BitSlow : public Port8Bit
+class Port8BitSlow : public Port8Bit   //The reason is that some old hardware controllers need a little time between commands
 {
 public:
     Port8BitSlow(uint16_t portnumber);
@@ -50,7 +50,7 @@ public:
 protected:
     static inline void Write8Slow(uint16_t _port, uint8_t _data)
     {
-        __asm__ volatile("outb %0, %1\njmp 1f\n1: jmp 1f\n1:" : : "a" (_data), "Nd" (_port));
+        __asm__ volatile("outb %0, %1\njmp 1f\n1: jmp 1f\n1:" : : "a" (_data), "Nd" (_port)); //This jumps introduce a tiny delay.
     }
 
 };

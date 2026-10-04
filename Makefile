@@ -1,4 +1,5 @@
 
+# run the following commands:
 # sudo apt-get install g++ binutils libc6-dev-i386
 # sudo apt-get install VirtualBox grub-legacy xorriso
 
@@ -10,16 +11,16 @@ objects = loader.o gdt.o port.o interruptstubs.o interrupts.o keyboard.o kernel.
 
 
 
-%.o: %.cpp
+%.o: %.cpp   # this part of code help to convert the c++ file into the object(.o) files whicgh is mention in variable ojects
 	gcc $(GCCPARAMS) -c -o $@ $<
 
-%.o: %.s
+%.o: %.s   # this part of code help to convert the loader.s -> loader.o and interruptstube.s -> interruptstubes.o
 	as $(ASPARAMS) -o $@ $<
 
-mykernel.bin: linker.ld $(objects)
+mykernel.bin: linker.ld $(objects)  #it take all the object file and produce mykernel.bin using linker.ld
 	ld $(LDPARAMS) -T $< -o $@ $(objects)
 
-mykernel.iso: mykernel.bin
+mykernel.iso: mykernel.bin  #create bootable iso file copntain kernel
 	mkdir iso
 	mkdir iso/boot
 	mkdir iso/boot/grub
@@ -27,8 +28,8 @@ mykernel.iso: mykernel.bin
 	echo 'set timeout=0'                      > iso/boot/grub/grub.cfg
 	echo 'set default=0'                     >> iso/boot/grub/grub.cfg
 	echo ''                                  >> iso/boot/grub/grub.cfg
-	echo 'menuentry "My Operating System" {' >> iso/boot/grub/grub.cfg
-	echo '  multiboot /boot/mykernel.bin'    >> iso/boot/grub/grub.cfg
+	echo 'menuentry "Mark" {'  		 >> iso/boot/grub/grub.cfg
+	echo '  multiboot /boot/mykernel.bin'    >> iso/boot/grub/grub.cfg  # tell GRUB that it is multiboot kernel
 	echo '  boot'                            >> iso/boot/grub/grub.cfg
 	echo '}'                                 >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=mykernel.iso iso
@@ -45,4 +46,4 @@ install: mykernel.bin
 clean:
 	rm -f $(objects) mykernel.bin mykernel.iso
 
-	#fbbbedbkedbvjkdf
+

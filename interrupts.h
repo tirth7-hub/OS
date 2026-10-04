@@ -9,11 +9,11 @@
 
 class InterruptManager;
 
-class InterruptHandler
+class InterruptHandler     //basic interface for hardware/software interrupt handlers
 {
 protected:
-    uint8_t InterruptNumber;
-    InterruptManager* interruptManager;
+    uint8_t InterruptNumber;    //this tell which InterruptNumber belong to me
+    InterruptManager* interruptManager;   //this tell which InterruptManager i belong to
     InterruptHandler(InterruptManager* interruptManager, uint8_t InterruptNumber);
     ~InterruptHandler();
 public:
@@ -29,13 +29,13 @@ protected:
     static InterruptManager* ActiveInterruptManager;
     InterruptHandler* handlers[256];
 
-    struct GateDescriptor
+    struct GateDescriptor  // this is cpu's format for an interrupt gate
     {
-        uint16_t handlerAddressLowBits;
+        uint16_t handlerAddressLowBits;     //low 16 bits
         uint16_t gdt_codeSegmentSelector;
         uint8_t reserved;
         uint8_t access;
-        uint16_t handlerAddressHighBits;
+        uint16_t handlerAddressHighBits;  //high 16 bits
     } __attribute__((packed));
 
     static GateDescriptor interruptDescriptorTable[256];
