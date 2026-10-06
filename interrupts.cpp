@@ -111,6 +111,7 @@ programmableInterruptControllerSlaveDataPort(0xA1)
     SetInterruptDescriptorTableEntry(hardwareInterruptOffset + 0x0D, CodeSegment, &HandleInterruptRequest0x0D, 0, IDT_INTERRUPT_GATE);
     SetInterruptDescriptorTableEntry(hardwareInterruptOffset + 0x0E, CodeSegment, &HandleInterruptRequest0x0E, 0, IDT_INTERRUPT_GATE);
     SetInterruptDescriptorTableEntry(hardwareInterruptOffset + 0x0F, CodeSegment, &HandleInterruptRequest0x0F, 0, IDT_INTERRUPT_GATE);
+    SetInterruptDescriptorTableEntry(hardwareInterruptOffset + 0x32, CodeSegment, &HandleInterruptRequest0x31, 0, IDT_INTERRUPT_GATE);
 
     programmableInterruptControllerMasterCommandPort.Write(0x11);
     programmableInterruptControllerSlaveCommandPort.Write(0x11);
@@ -186,11 +187,11 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interrupt, uint32_t esp)
     }
 
     // hardware interrupts must be acknowledged
-    if(hardwareInterruptOffset <= interrupt && interrupt < hardwareInterruptOffset+16)
+    if(hardwareInterruptOffset <= interrupt && interrupt < hardwareInterruptOffset+16) //check whether this was a hardware IRQ for 0x21
     {
-        programmableInterruptControllerMasterCommandPort.Write(0x20);
+        programmableInterruptControllerMasterCommandPort.Write(0x20); //this send the EOI-end of interrupt
         if(hardwareInterruptOffset + 8 <= interrupt)
-            programmableInterruptControllerSlaveCommandPort.Write(0x20);
+            programmableInterruptControllerSlaveCommandPort.Write(0x20);   //this tell that PIC, i finished handling this interrupt
     }
 
     return esp;

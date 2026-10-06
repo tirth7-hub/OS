@@ -3,17 +3,17 @@
 
 KeyboardDriver::KeyboardDriver(InterruptManager* manager)
 : InterruptHandler(manager, 0x21), // 0x21 is the interriptNumber for keyboard, this act as a bridge b/w generic interrupt and specific keyboard driver
-dataport(0x60),
-commandport(0x64)
+dataport(0x60), //0x60 is memory address of keyboard port
+commandport(0x64) //0x64 is memory address of keyboard controller port
 {
-    while(commandport.Read() & 0x1)
-        dataport.Read();
-    commandport.Write(0xae); // activate interrupts
+    while(commandport.Read() & 0x1) //reads the controller status
+        dataport.Read();  //bit 0 indicate data availabiity
+    commandport.Write(0xae); // tell keyboard controller to enable the keyboard interface
     commandport.Write(0x20); // command 0x20 = read controller command byte
-    uint8_t status = (dataport.Read() | 1) & ~0x10;
-    commandport.Write(0x60); // command 0x60 = set controller command byte
-    dataport.Write(status);
-    dataport.Write(0xf4);
+    uint8_t status = (dataport.Read() | 1) & ~0x10; //modifies that command byte
+    commandport.Write(0x60); // this code means that write a new controller commmand byte
+    dataport.Write(status); //writes it
+    dataport.Write(0xf4); //enable keyboard scanning on standerd PS
 }
 
 KeyboardDriver::~KeyboardDriver()
@@ -24,7 +24,7 @@ void printf(char*);
 
 uint32_t KeyboardDriver::HandleInterrupt(uint32_t esp)
 {
-    uint8_t key = dataport.Read();
+    uint8_t key = dataport.Read();  //this read port 0x60
     if(key < 0x80)
     {
         switch(key)

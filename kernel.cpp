@@ -60,9 +60,21 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
   printf("Good Morning Sir!");
   GlobalDescriptorTable gdt;
   InterruptManager Interrupts(0x20, &gdt);  //0x20-32 decimal, This is the interrupt number where you want hardware IRQs to begin
-  KeyboardDriver keyboard(&Interrupts);
-  Interrupts.Activate();
+  KeyboardDriver keyboard(&Interrupts); //call KeyboardDriver function in keyboard.cpp file
+  Interrupts.Activate();  // this call the Activte function that run sti(set interrupt flag) cpu may now accept maskable hardware interrupts.
 
-  while(1);
+  while(1); //this is infinite loop , this os currently has nothing to do in this main kernel thread but interrupt can occur Activate function enable them
+
+  // kernelMain:
+  //   forever:
+  //       do nothing
+  //     meanwhile:
+  //       keyboard interrupt
+  //           |
+  //       handle key
+  //           |
+  //       return
+  //           |
+  //       continue infinite loop
 }
 
