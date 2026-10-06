@@ -29,6 +29,8 @@ uint32_t KeyboardDriver::HandleInterrupt(uint32_t esp)
     {
         switch(key)
         {
+
+            //have some changes
             case 0x02: printf("1"); break;
             case 0x03: printf("2"); break;
             case 0x04: printf("3"); break;
