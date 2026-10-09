@@ -6,14 +6,14 @@ KeyboardDriver::KeyboardDriver(InterruptManager* manager)
 dataport(0x60), //0x60 is memory address of keyboard port
 commandport(0x64) //0x64 is memory address of keyboard controller port
 {
-    while(commandport.Read() & 0x1) //reads the controller status
-        dataport.Read();  //bit 0 indicate data availabiity
-    commandport.Write(0xae); // tell keyboard controller to enable the keyboard interface
-    commandport.Write(0x20); // command 0x20 = read controller command byte
-    uint8_t status = (dataport.Read() | 1) & ~0x10; //modifies that command byte
-    commandport.Write(0x60); // this code means that write a new controller commmand byte
-    dataport.Write(status); //writes it
-    dataport.Write(0xf4); //enable keyboard scanning on standerd PS
+    // while(commandport.Read() & 0x1) //reads the controller status
+    //     dataport.Read();  //bit 0 indicate data availabiity
+    // commandport.Write(0xae); // tell keyboard controller to enable the keyboard interface
+    // commandport.Write(0x20); // command 0x20 = read controller command byte
+    // uint8_t status = (dataport.Read() | 1) & ~0x10; //modifies that command byte
+    // commandport.Write(0x60); // this code means that write a new controller commmand byte
+    // dataport.Write(status); //writes it
+    // dataport.Write(0xf4); //enable keyboard scanning on standerd PS
 }
 
 KeyboardDriver::~KeyboardDriver()
@@ -21,6 +21,17 @@ KeyboardDriver::~KeyboardDriver()
 }
 
 void printf(char*);
+
+void KeyboardDriver::Activate(){
+    while(commandport.Read() & 0x1) //reads the controller status
+        dataport.Read();  //bit 0 indicate data availabiity
+        commandport.Write(0xae); // tell keyboard controller to enable the keyboard interface
+        commandport.Write(0x20); // command 0x20 = read controller command byte
+        uint8_t status = (dataport.Read() | 1) & ~0x10; //modifies that command byte
+        commandport.Write(0x60); // this code means that write a new controller commmand byte
+        dataport.Write(status); //writes it
+        dataport.Write(0xf4); //enable keyboard scanning on standerd PS
+}
 
 uint32_t KeyboardDriver::HandleInterrupt(uint32_t esp)
 {
@@ -30,7 +41,7 @@ uint32_t KeyboardDriver::HandleInterrupt(uint32_t esp)
         switch(key)
         {
 
-            //have some changes
+            //still have some changes
             case 0x02: printf("1"); break;
             case 0x03: printf("2"); break;
             case 0x04: printf("3"); break;

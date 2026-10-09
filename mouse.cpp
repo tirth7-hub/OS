@@ -6,13 +6,22 @@ MouseDriver::MouseDriver(InterruptManager* manager)
 dataport(0x60), //0x60 is memory address of keyboard port
 commandport(0x64) //0x64 is memory address of keyboard controller port
 {
+
+
+}
+
+MouseDriver::~MouseDriver()
+{
+}
+
+void MouseDriver::Activate(){
     offset = 0;
     buttons= 0;
     uint16_t* VideoMemory = (uint16_t*)0xb8000;
 
     VideoMemory[80*12+40] = ((VideoMemory[80*12+40] & 0xF000) >> 4)
-                        | ((VideoMemory[80*12+40] & 0x0F00) << 4)
-                        | ((VideoMemory[80*12+40] & 0x00FF));
+    | ((VideoMemory[80*12+40] & 0x0F00) << 4)
+    | ((VideoMemory[80*12+40] & 0x00FF));
 
 
     commandport.Write(0xAB); // tell keyboard controller to enable the keyboard interface
@@ -24,11 +33,6 @@ commandport(0x64) //0x64 is memory address of keyboard controller port
     commandport.Write(0xD4);
     dataport.Write(0xF4);//enable keyboard scanning on standerd PS
     dataport.Read();
-
-}
-
-MouseDriver::~MouseDriver()
-{
 }
 
 void printf(char*);
