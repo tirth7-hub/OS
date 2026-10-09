@@ -45,6 +45,73 @@ void printf(char* str)
 
 
 
+
+
+
+
+
+void printfHex(uint8_t key){
+
+  char* foo = "00";
+  char* hex = "0123456789ABCDEF";
+  foo[0] = hex[(key >> 4) & 0xF];
+  foo[1] = hex[key & 0xF];
+  printf(foo);
+}
+
+class PrintfKeyboardEventHandler : public KeyboardEventHandler
+{
+public:
+  void OnKeyDown(char c)
+  {
+    char* foo =" ";
+    foo[0]= c;
+    printf(foo);
+  }
+};
+
+
+
+class MouseToConsole : public MouseEventHandler
+{
+      int8_t x, y;
+public:
+    MouseToConsole()
+    {
+
+    }
+    void OnMouseMove(int xoffset,int yoffset)
+    {
+      uint16_t* VideoMemory = (uint16_t*)0xb8000;
+      x=40;
+      y=12;
+      VideoMemory[80*y+x] = ((VideoMemory[80*y+x] & 0xF000) >> 4)
+      | ((VideoMemory[80*y+x] & 0x0F00) << 4)
+      | ((VideoMemory[80*y+x] & 0x00FF));
+
+
+      x += xoffset;
+      if(x<0) x =0;
+      if(x>=80) x=79;
+
+
+      y -= yoffset;
+      if(y<0) y =0;
+      if(y>=25) y=24;
+
+      VideoMemory[80*y+x] = ((VideoMemory[80*y+x] & 0xF000) >> 4)
+      | ((VideoMemory[80*y+x] & 0x0F00) << 4)
+      | ((VideoMemory[80*y+x] & 0x00FF));
+
+
+
+    }
+};
+
+
+
+
+
 typedef void (*constructor)();   //constructor is a pointer to a function returning void
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
@@ -67,12 +134,16 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
   printf("initialized hardware!,stage-1\n");
 
   DriverManager drvManager;
-  KeyboardDriver keyboard(&Interrupts); //call KeyboardDriver function in keyboard.cpp file
+
+  PrintfKeyboardEventHandler kbhandler;
+
+
+  KeyboardDriver keyboard(&Interrupts, &kbhandler); //call KeyboardDriver function in keyboard.cpp file
   drvManager.AddDriver(&keyboard);
 
 
-
-  MouseDriver mouse(&Interrupts); //call KeyboardDriver function in keyboard.cpp file
+  MouseEventHandler mousehandler;
+  MouseDriver mouse(&Interrupts, &mousehandler); //call KeyboardDriver function in keyboard.cpp file
   drvManager.AddDriver(&mouse);
   printf("initialized hardware!,stage-2\n");
   drvManager.ActivateAll();

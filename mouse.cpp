@@ -1,84 +1,94 @@
 
 #include "mouse.h"
+void printf(char*);
 
-MouseDriver::MouseDriver(InterruptManager* manager)
-: InterruptHandler(manager, 0x2), // 0x21 is the interriptNumber for keyboard, this act as a bridge b/w generic interrupt and specific keyboard driver
-dataport(0x60), //0x60 is memory address of keyboard port
-commandport(0x64) //0x64 is memory address of keyboard controller port
+MouseEventHandler::MouseEventHandler()
 {
+}
+
+void MouseEventHandler::OnActivate()
+{
+}
+
+void MouseEventHandler::OnMouseDown(uint8_t button)
+{
+}
+
+void MouseEventHandler::OnMouseUp(uint8_t button)
+{
+}
+
+void MouseEventHandler::OnMouseMove(int x, int y)
+{
+}
 
 
+
+
+
+MouseDriver::MouseDriver(InterruptManager* manager, MouseEventHandler* handler)
+: InterruptHandler(manager, 0x2C),
+dataport(0x60),
+commandport(0x64)
+{
+    this->handler = handler;
 }
 
 MouseDriver::~MouseDriver()
 {
 }
 
-void MouseDriver::Activate(){
+void MouseDriver::Activate()
+{
     offset = 0;
-    buttons= 0;
-    uint16_t* VideoMemory = (uint16_t*)0xb8000;
+    buttons = 0;
 
-    VideoMemory[80*12+40] = ((VideoMemory[80*12+40] & 0xF000) >> 4)
-    | ((VideoMemory[80*12+40] & 0x0F00) << 4)
-    | ((VideoMemory[80*12+40] & 0x00FF));
+    if(handler != 0)
+        handler->OnActivate();
 
-
-    commandport.Write(0xAB); // tell keyboard controller to enable the keyboard interface
-    commandport.Write(0x20); // command 0x20 = read controller command byte
-    uint8_t status = (dataport.Read() | 2); //modifies that command byte
-    commandport.Write(0x60); // this code means that write a new controller commmand byte
-    dataport.Write(status); //writes it
+    commandport.Write(0xA8);
+    commandport.Write(0x20); // command 0x60 = read controller command byte
+    uint8_t status = dataport.Read() | 2;
+    commandport.Write(0x60); // command 0x60 = set controller command byte
+    dataport.Write(status);
 
     commandport.Write(0xD4);
-    dataport.Write(0xF4);//enable keyboard scanning on standerd PS
+    dataport.Write(0xF4);
     dataport.Read();
 }
 
-void printf(char*);
-
 uint32_t MouseDriver::HandleInterrupt(uint32_t esp)
 {
-
     uint8_t status = commandport.Read();
-    if(!(status & 0x20))
+    if (!(status & 0x20))
         return esp;
 
-    static uint8_t x=40,y=12;
-
-
     buffer[offset] = dataport.Read();
-    offset = (offset +1) % 3;
-    if(offset == 0){
-        uint16_t* VideoMemory = (uint16_t*)0xb8000;
 
+    if(handler == 0)
+        return esp;
 
-        VideoMemory[80*y+x] = ((VideoMemory[80*y+x] & 0xF000) >> 4)
-                            | ((VideoMemory[80*y+x] & 0x0F00) << 4)
-                            | ((VideoMemory[80*y+x] & 0x00FF));
+    offset = (offset + 1) % 3;
 
+    if(offset == 0)
+    {
+        if(buffer[1] != 0 || buffer[2] != 0)
+        {
+            handler->OnMouseMove(buffer[1], -buffer[2]);
+        }
 
-        x += buffer[1];
-        if(x<0) x =0;
-        if(x>=80) x=79;
-
-
-        y -= buffer[2];
-        if(y<0) y =0;
-        if(y>=25) y=24;
-
-        VideoMemory[80*y+x] = ((VideoMemory[80*y+x] & 0xF000) >> 4)
-                            | ((VideoMemory[80*y+x] & 0x0F00) << 4)
-                            | ((VideoMemory[80*y+x] & 0x00FF));
-
-
-        for(uint8_t i =0;i<3;i++){
-            if((buffer[0] & (0x01<<i)) != (buttons & (0x01<<i)))
-                VideoMemory[80*y+x] = ((VideoMemory[80*y+x] & 0xF000) >> 4)
-                                    | ((VideoMemory[80*y+x] & 0x0F00) << 4)
-                                    | ((VideoMemory[80*y+x] & 0x00FF));
+        for(uint8_t i = 0; i < 3; i++)
+        {
+            if((buffer[0] & (0x1<<i)) != (buttons & (0x1<<i)))
+            {
+                if(buttons & (0x1<<i))
+                    handler->OnMouseUp(i+1);
+                else
+                    handler->OnMouseDown(i+1);
+            }
         }
         buttons = buffer[0];
     }
+
     return esp;
 }
