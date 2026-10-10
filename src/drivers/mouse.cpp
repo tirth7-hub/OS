@@ -1,5 +1,10 @@
 
-#include "mouse.h"
+#include <drivers/mouse.h>
+using namespace MarkOS::common;
+using namespace MarkOS::drivers;
+using namespace MarkOS::hardwarecommunication;
+
+
 void printf(char*);
 
 MouseEventHandler::MouseEventHandler()

@@ -1,5 +1,9 @@
 
-#include "interrupts.h"
+#include <hardwarecommunication/interrupts.h>
+
+using namespace MarkOS::common;
+using namespace MarkOS::hardwarecommunication;
+
 
 
 void printf(char* str);

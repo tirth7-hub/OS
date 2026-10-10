@@ -1,5 +1,8 @@
 
-#include "keyboard.h"
+#include <drivers/keyboard.h>
+using namespace MarkOS::common;
+using namespace MarkOS::drivers;
+using namespace MarkOS::hardwarecommunication;
 
 
 

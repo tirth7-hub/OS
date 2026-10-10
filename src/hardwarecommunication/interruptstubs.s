@@ -4,20 +4,20 @@
 
 .section .text
 
-.extern _ZN16InterruptManager15HandleInterruptEhj #There is a function defined somewhere else. It isn't defined in this assembly file, but I'll call it.
+.extern _ZN6MarkOS21hardwarecommunication16InterruptManager15HandleInterruptEhj #There is a function defined somewhere else. It isn't defined in this assembly file, but I'll call it.
 
 
 .macro HandleException num  #this define assembly marco
-.global _ZN16InterruptManager19HandleException\num\()Ev
-_ZN16InterruptManager19HandleException\num\()Ev:
+.global _ZN6MarkOS21hardwarecommunication16InterruptManager19HandleException\num\()Ev
+_ZN6MarkOS21hardwarecommunication16InterruptManager19HandleException\num\()Ev:
     movb $\num, (interruptnumber)
     jmp int_bottom
 .endm
 
 
 .macro HandleInterruptRequest num
-.global _ZN16InterruptManager26HandleInterruptRequest\num\()Ev
-_ZN16InterruptManager26HandleInterruptRequest\num\()Ev:
+.global _ZN6MarkOS21hardwarecommunication16InterruptManager26HandleInterruptRequest\num\()Ev
+_ZN6MarkOS21hardwarecommunication16InterruptManager26HandleInterruptRequest\num\()Ev:
     movb $\num + IRQ_BASE, (interruptnumber) #"movb"- Move a byte
     jmp int_bottom
 .endm
@@ -80,7 +80,7 @@ int_bottom:
     # C++ Handler aufrufen
     pushl %esp
     push (interruptnumber)
-    call _ZN16InterruptManager15HandleInterruptEhj
+    call _ZN6MarkOS21hardwarecommunication16InterruptManager15HandleInterruptEhj
     add %esp, 6
     mov %eax, %esp # stack pointer
 
@@ -91,8 +91,8 @@ int_bottom:
     pop %ds
     popa
 
-.global _ZN16InterruptManager15InterruptIgnoreEv  #mangled name
-_ZN16InterruptManager15InterruptIgnoreEv:
+.global _ZN6MarkOS21hardwarecommunication16InterruptManager15InterruptIgnoreEv  #mangled name
+_ZN6MarkOS21hardwarecommunication16InterruptManager15InterruptIgnoreEv:
 
     iret   #the CPU automatically pushed interrupt-related state when entering the interrupt
 

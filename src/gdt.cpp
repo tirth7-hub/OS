@@ -1,5 +1,7 @@
+#include <gdt.h>
 
-#include "gdt.h"
+using namespace MarkOS;
+using namespace MarkOS::common;
 
 
 GlobalDescriptorTable::GlobalDescriptorTable()

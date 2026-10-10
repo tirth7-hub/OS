@@ -1,5 +1,8 @@
 
-#include "port.h"
+#include <hardwarecommunication/port.h>
+
+using namespace MarkOS::common;
+using namespace MarkOS::hardwarecommunication;
 
 
 Port::Port(uint16_t portnumber)
