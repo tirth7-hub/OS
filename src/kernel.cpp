@@ -2,6 +2,7 @@
 #include <common/types.h>
 #include <gdt.h>
 #include <hardwarecommunication/interrupts.h>
+#include <hardwarecommunication/pci.h>
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
 #include <drivers/driver.h>
@@ -151,6 +152,11 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
   MouseEventHandler mousehandler;
   MouseDriver mouse(&Interrupts, &mousehandler); //call KeyboardDriver function in keyboard.cpp file
   drvManager.AddDriver(&mouse);
+
+  PeripheralComponentInterconnectController PCIController;
+  PCIController.SelectDrivers(&drvManager);
+
+
   printf("initialized hardware!,stage-2\n");
   drvManager.ActivateAll();
 

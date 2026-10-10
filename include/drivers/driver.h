@@ -24,9 +24,6 @@ namespace MarkOS
             DriverManager();
             void AddDriver(Driver*);
             void ActivateAll();
-
-
-
         };
 
     }

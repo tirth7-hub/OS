@@ -13,6 +13,7 @@ objects = obj/loader.o \
 	  obj/hardwarecommunication/port.o \
 	  obj/hardwarecommunication/interruptstubs.o \
 	  obj/hardwarecommunication/interrupts.o \
+	  obj/hardwarecommunication/pci.o \
 	  obj/drivers/keyboard.o \
 	  obj/drivers/mouse.o\
 	  obj/kernel.o
@@ -47,7 +48,7 @@ mykernel.iso: mykernel.bin  #create bootable iso file copntain kernel
 
 run: mykernel.iso
 	(killall VirtualBox && sleep 1) || true
-	VirtualBox --startvm 'My Operating System' &
+	VirtualBox --startvm 'MARKOS' &
 
 install: mykernel.bin
 	sudo cp $< /boot/mykernel.bin
@@ -55,5 +56,6 @@ install: mykernel.bin
 .PHONY: clean
 clean:
 	rm -rf obj mykernel.bin mykernel.iso
+
 
 
