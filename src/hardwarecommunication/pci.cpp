@@ -64,7 +64,7 @@ bool PeripheralComponentInterconnectController::DeviceHasFunctions(common::uint1
 void printf(char* str);
 void printfHex(uint8_t);
 
-void PeripheralComponentInterconnectController::SelectDrivers(DriverManager* driverManager, MarkOS::hardwarecommunication::interruptManager* interrupts)
+void PeripheralComponentInterconnectController::SelectDrivers(DriverManager* driverManager, MarkOS::hardwarecommunication::InterruptManager* interrupts)
 {
     for(int bus = 0; bus < 8; bus++)
     {
@@ -153,7 +153,7 @@ BaseAddressRegister PeripheralComponentInterconnectController::GetBaseAddressReg
 }
 
 
-Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponentInterconnectDeviceDescriptor dev,interruptManager* interrupts)
+Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponentInterconnectDeviceDescriptor dev, InterruptManager* interrupts)
 {
     switch(dev.vendor_id)
     {

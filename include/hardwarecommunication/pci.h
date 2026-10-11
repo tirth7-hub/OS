@@ -68,13 +68,13 @@ namespace MarkOS
 
             bool DeviceHasFunctions(MarkOS::common::uint16_t bus, MarkOS::common::uint16_t device);
 
-            void SelectDrivers(MarkOS::drivers::DriverManager* driverManager, MarkOS::hardwarecommunication::interruptManager* interrupts);
+            void SelectDrivers(MarkOS::drivers::DriverManager* driverManager, MarkOS::hardwarecommunication::InterruptManager* interrupts);
 
 
             PeripheralComponentInterconnectDeviceDescriptor GetDeviceDescriptor(MarkOS::common::uint16_t bus, MarkOS::common::uint16_t device, MarkOS::common::uint16_t function);
 
 
-            MarkOS::drivers::Driver* GetDriver(PeripheralComponentInterconnectDeviceDescriptor, MarkOS::hardwarecommunication::interruptManager* interrupts);
+            MarkOS::drivers::Driver* GetDriver(PeripheralComponentInterconnectDeviceDescriptor, MarkOS::hardwarecommunication::InterruptManager* interrupts);
 
 
 
