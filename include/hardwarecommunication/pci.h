@@ -10,6 +10,23 @@ namespace MarkOS
 {
     namespace hardwarecommunication
     {
+        enum BaseAddressRegisterType
+        {
+            MemoryMapping =0,
+            InputOutput = 1
+
+        };
+
+        class BaseAddressRegister
+        {
+        public:
+            bool prefetchable;
+            MarkOS::common::uint8_t* address;
+            MarkOS::common::uint32_t size;
+            BaseAddressRegisterType type;
+
+        };
+
 
         class PeripheralComponentInterconnectDeviceDescriptor
         {
@@ -46,11 +63,22 @@ namespace MarkOS
             ~PeripheralComponentInterconnectController();
 
             MarkOS::common::uint32_t Read(MarkOS::common::uint16_t bus, MarkOS::common::uint16_t device, MarkOS::common::uint16_t function, MarkOS::common::uint32_t registeroffset);
+
             void Write(MarkOS::common::uint16_t bus, MarkOS::common::uint16_t device, MarkOS::common::uint16_t function, MarkOS::common::uint32_t registeroffset, MarkOS::common::uint32_t value);
+
             bool DeviceHasFunctions(MarkOS::common::uint16_t bus, MarkOS::common::uint16_t device);
 
-            void SelectDrivers(MarkOS::drivers::DriverManager* driverManager);
+            void SelectDrivers(MarkOS::drivers::DriverManager* driverManager, MarkOS::hardwarecommunication::interruptManager* interrupts);
+
+
             PeripheralComponentInterconnectDeviceDescriptor GetDeviceDescriptor(MarkOS::common::uint16_t bus, MarkOS::common::uint16_t device, MarkOS::common::uint16_t function);
+
+
+            MarkOS::drivers::Driver* GetDriver(PeripheralComponentInterconnectDeviceDescriptor, MarkOS::hardwarecommunication::interruptManager* interrupts);
+
+
+
+            BaseAddressRegister GetBaseAddressRegister(MarkOS::common::uint16_t bus, MarkOS::common::uint16_t device, MarkOS::common::uint16_t function, MarkOS::common::uint16_t bar);
         };
 
     }
