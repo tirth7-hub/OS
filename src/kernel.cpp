@@ -6,6 +6,7 @@
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
 #include <drivers/driver.h>
+#include <drivers/vga.h>
 
 
 using namespace MarkOS;
@@ -156,12 +157,24 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
   PeripheralComponentInterconnectController PCIController;
   PCIController.SelectDrivers(&drvManager, &Interrupts);
 
+  VideoGraphicsArray vga;
+
 
   printf("initialized hardware!,stage-2\n");
   drvManager.ActivateAll();
 
   printf("initialized hardware!,stage-3\n");
   Interrupts.Activate();  // this call the Activte function that run sti(set interrupt flag) cpu may now accept maskable hardware interrupts.
+
+  vga.SetMode(320,200,8);
+
+  for(int32_t y=0;y<200; y++)
+  {
+    for(int32_t x=0;x<320;x++)
+    {
+      vga.PutPixel(x,y,0x00,0x00,0xA8); //blue color screen
+    }
+  }
 
   while(1); //this is infinite loop , this os currently has nothing to do in this main kernel thread but interrupt can occur Activate function enable them
 

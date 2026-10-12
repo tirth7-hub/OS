@@ -1,6 +1,7 @@
 #include <drivers/vga.h>
 
-using namespace drivers;
+using namespace MarkOS::common;
+using namespace MarkOS::drivers;
 
 VideoGraphicsArray::VideoGraphicsArray() :
     miscPort(0x3c2),
@@ -13,7 +14,7 @@ VideoGraphicsArray::VideoGraphicsArray() :
     attributeControllerIndexPort(0x3c0),
     attributeControllerReadPort(0x3c1),
     attributeControllerWritePort(0x3c0),
-    attributeControllerResetPort(0x3d8);
+    attributeControllerResetPort(0x3d8)
 
 {
 
@@ -24,10 +25,10 @@ VideoGraphicsArray::~VideoGraphicsArray()
 }
 
 
-void VideoGraphicsArray::WriteRegisters(uint8_t* registers)
+void VideoGraphicsArray::WriteRegisters(MarkOS::common::uint8_t* registers)
 {
     //misc
-    miscPort.Write(*(register++));
+    miscPort.Write(*(registers++));
     //sequencer
     for(uint8_t i=0; i<5; i++){
         sequenceIndexPort.Write(i);
@@ -67,25 +68,10 @@ void VideoGraphicsArray::WriteRegisters(uint8_t* registers)
     attributeControllerIndexPort.Write(0x20);
 
 }
-uint8_t* VideoGraphicsArray::GetFrameBufferSegment()
-{
-
-}
-
-void VideoGraphicsArray::PutPixel(uint32_t x, uint32_t y, uint8_t colorIndex)
-{
-
-}
-uint8_t VideoGraphicsArray::GetColorIndex(uint8_t r, uint8_t g, uint8_t b)
-{
-
-}
-
-
 
 bool VideoGraphicsArray::SupportsMode(uint32_t width, uint32_t height, uint32_t colordepth)
 {
-    return width == 320 && height == 200 && colordepth == 8;
+    return width == 320,height == 200,colordepth == 8;
 }
 bool VideoGraphicsArray::SetMode(uint32_t width, uint32_t height, uint32_t colordepth)
 {
@@ -97,7 +83,7 @@ bool VideoGraphicsArray::SetMode(uint32_t width, uint32_t height, uint32_t color
     {
         0x63,
 
-        0x03, 0x01, 0x0F, 0x00, 0x0E
+        0x03, 0x01, 0x0F, 0x00, 0x0E,
 
         0x5F, 0x4F, 0x50, 0x82, 0x50, 0x80, 0xBF, 0x1F,
         0x00, 0x41, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -116,11 +102,36 @@ bool VideoGraphicsArray::SetMode(uint32_t width, uint32_t height, uint32_t color
     WriteRegisters(g_320x200x256);
     return true;
 }
-void VideoGraphicsArray::PutPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b)
-{
 
+
+uint8_t* VideoGraphicsArray::GetFrameBufferSegment()
+{
+    graphicsControllerIndexPort.Write(0x06);
+    uint8_t segmentNumber = ((graphicsControllerDataPort.Read() >>2) && 0x03);
+    switch (segmentNumber)
+    {
+        default:
+        case 0: return (uint8_t*)0x00000;
+        case 1: return (uint8_t*)0xA0000;
+        case 2: return (uint8_t*)0xB0000;
+        case 3: return (uint8_t*)0xB8000;
+    }
 }
 
+void VideoGraphicsArray::PutPixel(uint32_t x, uint32_t y, uint8_t colorIndex)
+{
+    uint8_t* pixelAddress = (GetFrameBufferSegment() + (320*y + x));
+    *pixelAddress = colorIndex;
+}
+uint8_t VideoGraphicsArray::GetColorIndex(uint8_t r, uint8_t g, uint8_t b){
+    if(r==0x00 && g==0x00 && b == 0xA8)
+        return 0x01;
+}
+
+void VideoGraphicsArray::PutPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b)
+{
+    PutPixel(x,y, GetColorIndex(r,g,b));
+}
 
 
 
