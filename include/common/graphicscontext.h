@@ -7,7 +7,7 @@ namespace MarkOS
 {
     namespace common
     {
-        typedef GraphicsContext VideoGraphicsArray;
+        typedef MarkOS::drivers::VideoGraphicsArray GraphicsContext;
     }
 }
 
