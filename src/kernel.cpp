@@ -7,12 +7,14 @@
 #include <drivers/mouse.h>
 #include <drivers/driver.h>
 #include <drivers/vga.h>
+#include <gui/desktop.h>
 
 
 using namespace MarkOS;
 using namespace MarkOS::common;
 using namespace MarkOS::drivers;
 using namespace MarkOS::hardwarecommunication;
+using namespace MarkOS::gui;
 
 void printf(char* str)
 {
@@ -134,24 +136,28 @@ extern "C" void callConstructors()
 extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot_magic*/) //kernel's c++ starting point'
 {
 
+
   printf("Hello\n");
 
   GlobalDescriptorTable gdt;
   InterruptManager Interrupts(0x20, &gdt);  //0x20-32 decimal, This is the interrupt number where you want hardware IRQs to begin
 
   printf("initialized hardware!,stage-1\n");
+  Desktop desktop (320,200,0x00,0x00,0xA8);
 
   DriverManager drvManager;
 
   PrintfKeyboardEventHandler kbhandler;
 
 
-  KeyboardDriver keyboard(&Interrupts, &kbhandler); //call KeyboardDriver function in keyboard.cpp file
+  //KeyboardDriver keyboard(&Interrupts, &kbhandler); //call KeyboardDriver function in keyboard.cpp file
+  KeyboardDriver keyboard(&Interrupts, &desktop); //call KeyboardDriver function in keyboard.cpp file
   drvManager.AddDriver(&keyboard);
 
 
-  MouseEventHandler mousehandler;
-  MouseDriver mouse(&Interrupts, &mousehandler); //call KeyboardDriver function in keyboard.cpp file
+  // MouseEventHandler mousehandler;
+  //MouseDriver mouse(&Interrupts, &mousehandler); //call KeyboardDriver function in keyboard.cpp file
+  MouseDriver mouse(&Interrupts, &desktop); //call KeyboardDriver function in keyboard.cpp file
   drvManager.AddDriver(&mouse);
 
   PeripheralComponentInterconnectController PCIController;
@@ -166,11 +172,14 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
   printf("initialized hardware!,stage-3\n");
   Interrupts.Activate();  // this call the Activte function that run sti(set interrupt flag) cpu may now accept maskable hardware interrupts.
 
+
+
   vga.SetMode(320,200,8);
 
-  vga.FillRectangle(0,0,320,200,0x00,0x00,0xA8);
-
-  while(1); //this is infinite loop , this os currently has nothing to do in this main kernel thread but interrupt can occur Activate function enable them
+  while(1)
+  {
+      desktop.Draw(&vga);
+  } //this is infinite loop , this os currently has nothing to do in this main kernel thread but interrupt can occur Activate function enable them
 
   // kernelMain:
   //   forever:
