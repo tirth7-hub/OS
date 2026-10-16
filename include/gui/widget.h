@@ -1,5 +1,5 @@
 
-#ifndef __MARKOS__Gui__WIDGET_H
+#ifndef __MARKOS__GUI__WIDGET_H
 #define __MARKOS__GUI__WIDGET_H
 
 #include <common/types.h>
@@ -7,9 +7,6 @@
 #include <drivers/keyboard.h>
 
 
-#include <common/types.h>
-#include <common/graphicscontext.h>
-#include <drivers/keyboard.h>
 
 namespace MarkOS
 {

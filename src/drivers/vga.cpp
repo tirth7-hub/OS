@@ -118,8 +118,12 @@ uint8_t* VideoGraphicsArray::GetFrameBufferSegment()
     }
 }
 
-void VideoGraphicsArray::PutPixel(uint32_t x, uint32_t y, uint8_t colorIndex)
+void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t colorIndex)
 {
+    if(x < 0 ||320 <= x
+    || y <0 || 200 <= y)
+        return;
+
     uint8_t* pixelAddress = (GetFrameBufferSegment() + (320*y + x));
     *pixelAddress = colorIndex;
 }
@@ -132,7 +136,7 @@ uint8_t VideoGraphicsArray::GetColorIndex(uint8_t r, uint8_t g, uint8_t b){
     return 0x00;
 }
 
-void VideoGraphicsArray::PutPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b)
+void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t r, uint8_t g, uint8_t b)
 {
     PutPixel(x,y, GetColorIndex(r,g,b));
 }
