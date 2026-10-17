@@ -9,6 +9,8 @@
 #include <drivers/vga.h>
 #include <gui/desktop.h>
 #include <gui/window.h>
+#include <gui/render.h>
+#include <multitasking.h>
 
 
 using namespace MarkOS;
@@ -16,6 +18,8 @@ using namespace MarkOS::common;
 using namespace MarkOS::drivers;
 using namespace MarkOS::hardwarecommunication;
 using namespace MarkOS::gui;
+
+// #define GRAPHICSMODE
 
 void printf(char* str)
 {
@@ -121,6 +125,21 @@ public:
 
 
 
+void taskA()
+{
+  while(true)
+    printf("A");
+}
+
+void taskB()
+{
+  while(true)
+    printf("B");
+}
+
+
+
+
 
 
 typedef void (*constructor)();   //constructor is a pointer to a function returning void
@@ -134,6 +153,10 @@ extern "C" void callConstructors()
 
 
 
+
+
+
+
 extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot_magic*/) //kernel's c++ starting point'
 {
 
@@ -141,24 +164,33 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
   printf("Hello\n");
 
   GlobalDescriptorTable gdt;
-  InterruptManager Interrupts(0x20, &gdt);  //0x20-32 decimal, This is the interrupt number where you want hardware IRQs to begin
+  TaskManager taskManager;
+  Task task1(&gdt, taskA);
+  Task task2(&gdt, taskB);
+  taskManager.AddTask(&task1);
+  taskManager.AddTask(&task2);
 
+  InterruptManager Interrupts(0x20, &gdt, &taskManager);  //0x20-32 decimal, This is the interrupt number where you want hardware IRQs to begin
   printf("initialized hardware!,stage-1\n");
+#ifndef GRAPHICSMODE
   Desktop desktop (320,200,0x00,0x00,0xA8);
-
+#endif
   DriverManager drvManager;
-
+#ifndef GRAPHICSMODE
   PrintfKeyboardEventHandler kbhandler;
 
 
   //KeyboardDriver keyboard(&Interrupts, &kbhandler); //call KeyboardDriver function in keyboard.cpp file
   KeyboardDriver keyboard(&Interrupts, &desktop); //call KeyboardDriver function in keyboard.cpp file
+#endif
   drvManager.AddDriver(&keyboard);
 
-
-  // MouseEventHandler mousehandler;
+#ifndef GRAPHICSMODE
+  MouseEventHandler mousehandler;
   //MouseDriver mouse(&Interrupts, &mousehandler); //call KeyboardDriver function in keyboard.cpp file
+
   MouseDriver mouse(&Interrupts, &desktop); //call KeyboardDriver function in keyboard.cpp file
+#endif
   drvManager.AddDriver(&mouse);
 
   PeripheralComponentInterconnectController PCIController;
@@ -166,13 +198,13 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
 
   VideoGraphicsArray vga;
 
-
+  Render rend(320,200);
   printf("initialized hardware!,stage-2\n");
   drvManager.ActivateAll();
 
   printf("initialized hardware!,stage-3\n");
 
-
+#ifndef GRAPHICSMODE
 
   vga.SetMode(320,200,8);
 
@@ -180,11 +212,15 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
   desktop.AddChild(&win1);
   Window win2(&desktop,40, 15, 30, 30, 0x00,0xA8,0x00);
   desktop.AddChild(&win2);
+#endif
   Interrupts.Activate();  // this call the Activte function that run sti(set interrupt flag) cpu may now accept maskable hardware interrupts.
 
   while(1)
   {
-      desktop.Draw(&vga);
+    #ifndef GRAPHICSMODE
+      desktop.Draw(&rend);
+      rend.display(&vga);
+    #endif
   } //this is infinite loop , this os currently has nothing to do in this main kernel thread but interrupt can occur Activate function enable them
 
   // kernelMain:

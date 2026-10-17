@@ -19,6 +19,7 @@ _ZN6MarkOS21hardwarecommunication16InterruptManager19HandleException\num\()Ev:
 .global _ZN6MarkOS21hardwarecommunication16InterruptManager26HandleInterruptRequest\num\()Ev
 _ZN6MarkOS21hardwarecommunication16InterruptManager26HandleInterruptRequest\num\()Ev:
     movb $\num + IRQ_BASE, (interruptnumber) #"movb"- Move a byte
+    pushl $0
     jmp int_bottom
 .endm
 
@@ -64,32 +65,49 @@ HandleInterruptRequest 0x31
 
 int_bottom:
 
-    # register register
-    pusha  #Push all general-purpose 32-bit registers onto the stack.
-    pushl %ds
-    pushl %es
-    pushl %fs
-    pushl %gs
+    # register
+    #pusha  #Push all general-purpose 32-bit registers onto the stack.
+    # pushl %ds
+    # pushl %es
+    # pushl %fs
+    # pushl %gs
+    pushl %ebp
+    pushl %edi
+    pushl %esi
 
+    pushl %edx
+    pushl %ecx
+    pushl %eax
     # ring 0 segment register
     #cld -Clear the Direction Flag.
     #mov $0x10, %eax
     #mov %eax, %eds
     #mov %eax, %ees
 
-    # C++ Handler aufrufen
+    # call C++ Handler
     pushl %esp
     push (interruptnumber)
     call _ZN6MarkOS21hardwarecommunication16InterruptManager15HandleInterruptEhj
-    add %esp, 6
+    #add %esp, 6
     mov %eax, %esp # stack pointer
 
-    # register
-    pop %gs
-    pop %fs
-    pop %es
-    pop %ds
-    popa
+    # restore registers
+
+    pop %eax
+    pop %ebx
+    pop %ecx
+    pop %edx
+
+    pop %esi
+    pop %edi
+    pop %ebp
+    # pop %gs
+    # pop %fs
+    # pop %es
+    # pop %ds
+    # popa
+
+    add $4, %esp
 
 .global _ZN6MarkOS21hardwarecommunication16InterruptManager15InterruptIgnoreEv  #mangled name
 _ZN6MarkOS21hardwarecommunication16InterruptManager15InterruptIgnoreEv:

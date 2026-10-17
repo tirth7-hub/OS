@@ -2,8 +2,9 @@
 #ifndef __MARKOS__HARDWARECOMMUNICATION__INTERRUPTMANAGER_H
 #define __MARKOS__HARDWARECOMMUNICATION__INTERRUPTMANAGER_H
 
-#include <gdt.h>
 #include <common/types.h>
+#include <gdt.h>
+#include <multitasking.h>
 #include <hardwarecommunication/port.h>
 
 namespace MarkOS
@@ -32,6 +33,7 @@ namespace MarkOS
 
             static InterruptManager* ActiveInterruptManager;
             InterruptHandler* handlers[256];
+            TaskManager * taskManager;
 
             struct GateDescriptor  // this is cpu's format for an interrupt gate
             {
@@ -104,7 +106,7 @@ namespace MarkOS
             Port8BitSlow programmableInterruptControllerSlaveDataPort;
 
         public:
-            InterruptManager(MarkOS::common::uint16_t hardwareInterruptOffset, MarkOS::GlobalDescriptorTable* globalDescriptorTable);
+            InterruptManager(MarkOS::common::uint16_t hardwareInterruptOffset, MarkOS::GlobalDescriptorTable* globalDescriptorTable, MarkOS::TaskManager* taskManager);
             ~InterruptManager();
             MarkOS::common::uint16_t HardwareInterruptOffset();
             void Activate();
