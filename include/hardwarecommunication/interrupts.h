@@ -76,6 +76,42 @@ namespace MarkOS
             static void HandleInterruptRequest0x0F();
             static void HandleInterruptRequest0x31();
 
+            //static void HandleInterruptRequest0x01();
+            static void HandleInterruptRequest0x29();
+            //static void HandleInterruptRequest0x0D();
+            //static void HandleInterruptRequest0x0E();
+            //static void HandleInterruptRequest0x0F();
+            static void HandleInterruptRequest0x1A();
+            static void HandleInterruptRequest0x1B();
+            static void HandleInterruptRequest0x2B();
+            static void HandleInterruptRequest0x3A();
+            static void HandleInterruptRequest0x27();
+            static void HandleInterruptRequest0x28();
+            static void HandleInterruptRequest0x2A();
+            static void HandleInterruptRequest0x36();
+            static void HandleInterruptRequest0x1D();
+            static void HandleInterruptRequest0x5B();
+            static void HandleInterruptRequest0x38();
+            static void HandleInterruptRequest0x4B();
+            static void HandleInterruptRequest0x50();
+            //static void HandleInterruptRequest0x48();
+            //static void HandleInterruptRequest0x4D();
+
+            static void HandleInterruptRequest0x45();
+            static void HandleInterruptRequest0x47();
+            static void HandleInterruptRequest0x48();
+            static void HandleInterruptRequest0x49();
+            static void HandleInterruptRequest0x4D();
+            static void HandleInterruptRequest0x4C();
+            //static void HandleInterruptRequest0x4B();
+            static void HandleInterruptRequest0x51();
+            static void HandleInterruptRequest0x4F();
+            static void HandleInterruptRequest0x52();
+            static void HandleInterruptRequest0x53();
+            static void HandleInterruptRequest0x4E();
+            static void HandleInterruptRequest0x4A();
+            static void HandleInterruptRequest0x37();
+
             static void HandleException0x00();
             static void HandleException0x01();
             static void HandleException0x02();
