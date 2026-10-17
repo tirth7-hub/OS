@@ -23,7 +23,7 @@ void Render::display(common::GraphicsContext* gc)
         }
     }
 }
-void Render::PurPixel(MarkOS::common::int32_t x, MarkOS::common::int32_t y,  MarkOS::common::int8_t r, MarkOS::common::int8_t g, MarkOS::common::int8_t b)
+void Render::PutPixel(MarkOS::common::int32_t x, MarkOS::common::int32_t y,  MarkOS::common::int8_t r, MarkOS::common::int8_t g, MarkOS::common::int8_t b)
 {
     pixels[x][y].r = r;
     pixels[x][y].g = g;

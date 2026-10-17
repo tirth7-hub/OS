@@ -17,7 +17,7 @@ namespace MarkOS
 
         class Render : public MarkOS::drivers::VideoGraphicsArray{
         private:
-            Pixel pixels[1920][1080];
+            Pixel pixels[300][200];
 
         public:
             Render(
@@ -27,7 +27,7 @@ namespace MarkOS
 
             void display(common::GraphicsContext* gc);
 
-            void PurPixel(MarkOS::common::int32_t x, MarkOS::common::int32_t y,  MarkOS::common::int8_t r, MarkOS::common::int8_t g, MarkOS::common::int8_t b);
+            void PutPixel(MarkOS::common::int32_t x, MarkOS::common::int32_t y,  MarkOS::common::int8_t r, MarkOS::common::int8_t g, MarkOS::common::int8_t b);
         };
     }
 }
