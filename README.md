@@ -55,7 +55,7 @@ Computer starts
 
 
 keyboard route
-steo-1 : press a key (A)
+step-1 : press a key (A)
 step-2 : for key (A)-0x1E
 step-3 : the controller places the scan code where the cpu can read it through (I/o   		 port 0x60)
 step-4 : the keyboard generates: IRQ1
