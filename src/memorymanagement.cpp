@@ -85,3 +85,43 @@ void MemoryManager::free(void* ptr)
             chunk->next->prev = chunk;
     }
 }
+
+void* operator new(unsigned size){
+    if( MarkOS::MemoryManager::activeMemoryManager==0)
+
+        return 0;
+    return MarkOS::MemoryManager::activeMemoryManager->malloc(size);
+}
+
+
+void* operator new[] (unsigned size){
+    if( MarkOS::MemoryManager::activeMemoryManager==0)
+
+        return 0;
+    return MarkOS::MemoryManager::activeMemoryManager->malloc(size);
+}
+
+
+//placement new
+void* operator new(unsigned size, void* ptr){
+    return ptr;
+}
+
+
+void* operator new[] (unsigned size, void* ptr){
+    return ptr;
+}
+
+
+
+void operator delete(void* ptr){
+    if( MarkOS::MemoryManager::activeMemoryManager!=0)
+        MarkOS::MemoryManager::activeMemoryManager->free(ptr);
+}
+
+
+void operator delete[](void* ptr){
+    if( MarkOS::MemoryManager::activeMemoryManager!=0)
+        MarkOS::MemoryManager::activeMemoryManager->free(ptr);
+}
+

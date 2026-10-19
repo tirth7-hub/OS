@@ -68,11 +68,17 @@ void VideoGraphicsArray::WriteRegisters(MarkOS::common::uint8_t* registers)
     attributeControllerIndexPort.Write(0x20);
 
 }
-
-bool VideoGraphicsArray::SupportsMode(uint32_t width, uint32_t height, uint32_t colordepth)
+bool VideoGraphicsArray::SupportsMode(
+    uint32_t width,
+    uint32_t height,
+    uint32_t colordepth)
 {
-    return width == 320,height == 200,colordepth == 8;
+    return width == 320 && height == 200 && colordepth == 8;
 }
+// bool VideoGraphicsArray::SupportsMode(uint32_t width, uint32_t height, uint32_t colordepth)
+// {
+//     return width == 320,height == 200,colordepth == 8;
+// }
 bool VideoGraphicsArray::SetMode(uint32_t width, uint32_t height, uint32_t colordepth)
 {
 
@@ -107,7 +113,8 @@ bool VideoGraphicsArray::SetMode(uint32_t width, uint32_t height, uint32_t color
 uint8_t* VideoGraphicsArray::GetFrameBufferSegment()
 {
     graphicsControllerIndexPort.Write(0x06);
-    uint8_t segmentNumber = ((graphicsControllerDataPort.Read() >>2) && 0x03);
+    uint8_t segmentNumber =(graphicsControllerDataPort.Read() >> 2) & 0x03;
+    // uint8_t segmentNumber = ((graphicsControllerDataPort.Read() >>2) && 0x03);
     switch (segmentNumber)
     {
         default:
@@ -127,6 +134,9 @@ void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t colorIndex)
     uint8_t* pixelAddress = (GetFrameBufferSegment() + (320*y + x));
     *pixelAddress = colorIndex;
 }
+
+
+
 uint8_t VideoGraphicsArray::GetColorIndex(uint8_t r, uint8_t g, uint8_t b){
     if(r==0x00 && g==0x00 && b == 0xA8) return 0x00;  //black
     if(r==0x00 && g==0x00 && b == 0xA8) return 0x01;  //blue

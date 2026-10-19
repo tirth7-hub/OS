@@ -1,13 +1,12 @@
-#ifndef __MarkOS__GUI__RENDER_H
-#define __MarkOS__GUI__RENDER_H
+#ifndef __MARKOS__GUI__RENDER_H
+#define __MARKOS__GUI__RENDER_H
 
 #include <drivers/vga.h>
 #include <common/graphicscontext.h>
 
-namespace MarkOS
-{
-    namespace gui
-    {
+namespace MarkOS{
+    namespace gui{
+
         class Pixel{
         public:
             MarkOS::common::uint8_t r;
@@ -17,17 +16,18 @@ namespace MarkOS
 
         class Render : public MarkOS::drivers::VideoGraphicsArray{
         private:
-            Pixel pixels[300][200];
+            Pixel pixels[320][200];
 
         public:
             Render(
                 common::int32_t w, common::int32_t h
             );
+
             ~Render();
 
             void display(common::GraphicsContext* gc);
 
-            void PutPixel(MarkOS::common::int32_t x, MarkOS::common::int32_t y,  MarkOS::common::int8_t r, MarkOS::common::int8_t g, MarkOS::common::int8_t b);
+            void PutPixel(MarkOS::common::int32_t x, MarkOS::common::int32_t y, MarkOS::common::uint8_t r, MarkOS::common::uint8_t g, MarkOS::common::uint8_t b);
         };
     }
 }

@@ -22,7 +22,6 @@ objects = obj/loader.o \
 	  obj/gui/widget.o\
 	  obj/gui/window.o\
 	  obj/gui/desktop.o\
-	  obj/gui/render.o \
 	  obj/kernel.o
 
 
@@ -35,34 +34,34 @@ obj/%.o: src/%.s   # this part of code help to convert the loader.s -> loader.o 
 	mkdir -p $(@D)
 	as $(ASPARAMS) -o $@ $<
 
-mykernel.bin: linker.ld $(objects)  #it take all the object file and produce mykernel.bin using linker.ld
+MarkOS.bin: linker.ld $(objects)  #it take all the object file and produce MarkOS.bin using linker.ld
 	ld $(LDPARAMS) -T $< -o $@ $(objects)
 
-mykernel.iso: mykernel.bin  #create bootable iso file copntain kernel
+MarkOS.iso: MarkOS.bin  #create bootable iso file copntain kernel
 	mkdir iso
 	mkdir iso/boot
 	mkdir iso/boot/grub
-	cp mykernel.bin iso/boot/mykernel.bin
+	cp MarkOS.bin iso/boot/MarkOS.bin
 	echo 'set timeout=0'                      > iso/boot/grub/grub.cfg
 	echo 'set default=0'                     >> iso/boot/grub/grub.cfg
 	echo ''                                  >> iso/boot/grub/grub.cfg
 	echo 'menuentry "Mark" {'  		 >> iso/boot/grub/grub.cfg
-	echo '  multiboot /boot/mykernel.bin'    >> iso/boot/grub/grub.cfg  # tell GRUB that it is multiboot kernel
+	echo '  multiboot /boot/MarkOS.bin'    >> iso/boot/grub/grub.cfg  # tell GRUB that it is multiboot kernel
 	echo '  boot'                            >> iso/boot/grub/grub.cfg
 	echo '}'                                 >> iso/boot/grub/grub.cfg
-	grub-mkrescue --output=mykernel.iso iso
+	grub-mkrescue --output=MarkOS.iso iso
 	rm -rf iso
 
-run: mykernel.iso
+run: MarkOS.iso
 	(killall VirtualBox && sleep 1) || true
 	VirtualBox --startvm 'MARKOS' &
 
-install: mykernel.bin
-	sudo cp $< /boot/mykernel.bin
+install: MarkOS.bin
+	sudo cp $< /boot/MarkOS.bin
 
 .PHONY: clean
 clean:
-	rm -rf obj mykernel.bin mykernel.iso
+	rm -rf obj MarkOS.bin MarkOS.iso
 
 
 
