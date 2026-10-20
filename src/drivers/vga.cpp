@@ -23,51 +23,107 @@ VideoGraphicsArray::~VideoGraphicsArray()
 {
 
 }
-
-
-void VideoGraphicsArray::WriteRegisters(MarkOS::common::uint8_t* registers)
+//(GPT)
+void VideoGraphicsArray::WriteRegisters(
+    MarkOS::common::uint8_t* registers)
 {
-    //misc
+    using namespace MarkOS::common;
+
+    // Miscellaneous output register
     miscPort.Write(*(registers++));
-    //sequencer
-    for(uint8_t i=0; i<5; i++){
+
+    // Sequencer registers
+    for (uint8_t i = 0; i < 5; ++i)
+    {
         sequenceIndexPort.Write(i);
         sequenceDataPort.Write(*(registers++));
-
     }
-    // cathode ray tube controller
+
+    // Unlock protected CRTC registers.
     crtcIndexPort.Write(0x03);
     crtcDataPort.Write(crtcDataPort.Read() | 0x80);
 
     crtcIndexPort.Write(0x11);
-    crtcDataPort.Write(crtcDataPort.Read() & ~0x80);
+    crtcDataPort.Write(crtcDataPort.Read() & 0x7F);
 
-    registers[0x03] = registers[0x03] | 0x80;
-    registers[0x11] = registers[0x11] | ~0x80;
+    // The pointer is now at the beginning of the CRTC register table.
+    // CRTC register 3: preserve the other bits and set bit 7.
+    registers[0x03] |= 0x80;
 
-    for(uint8_t i=0; i<25; i++){
+    // CRTC register 17 (0x11): clear bit 7 to allow register writes.
+    registers[0x11] &= 0x7F;
+
+    // CRTC registers
+    for (uint8_t i = 0; i < 25; ++i)
+    {
         crtcIndexPort.Write(i);
         crtcDataPort.Write(*(registers++));
-
     }
 
-    //graphic controller
-    for(uint8_t i=0; i<9; i++){
+    // Graphics controller registers
+    for (uint8_t i = 0; i < 9; ++i)
+    {
         graphicsControllerIndexPort.Write(i);
         graphicsControllerDataPort.Write(*(registers++));
-
     }
 
-    //attribute controller
-    for(uint8_t i=0; i<21; i++){
+    // Attribute controller registers
+    for (uint8_t i = 0; i < 21; ++i)
+    {
         attributeControllerResetPort.Read();
         attributeControllerIndexPort.Write(i);
         attributeControllerWritePort.Write(*(registers++));
     }
+
+    // Re-enable display output.
     attributeControllerResetPort.Read();
     attributeControllerIndexPort.Write(0x20);
-
 }
+
+
+//(YT) void VideoGraphicsArray::WriteRegisters(MarkOS::common::uint8_t* registers)
+// {
+//     //misc
+//     miscPort.Write(*(registers++));
+//     //sequencer
+//     for(uint8_t i=0; i<5; i++){
+//         sequenceIndexPort.Write(i);
+//         sequenceDataPort.Write(*(registers++));
+//
+//     }
+//     // cathode ray tube controller
+//     crtcIndexPort.Write(0x03);
+//     crtcDataPort.Write(crtcDataPort.Read() | 0x80);
+//
+//     crtcIndexPort.Write(0x11);
+//     crtcDataPort.Write(crtcDataPort.Read() & ~0x80);
+//
+//     registers[0x03] = registers[0x03] | 0x80;
+//     registers[0x11] = registers[0x11] | ~0x80;
+//
+//     for(uint8_t i=0; i<25; i++){
+//         crtcIndexPort.Write(i);
+//         crtcDataPort.Write(*(registers++));
+//
+//     }
+//
+//     //graphic controller
+//     for(uint8_t i=0; i<9; i++){
+//         graphicsControllerIndexPort.Write(i);
+//         graphicsControllerDataPort.Write(*(registers++));
+//
+//     }
+//
+//     //attribute controller
+//     for(uint8_t i=0; i<21; i++){
+//         attributeControllerResetPort.Read();
+//         attributeControllerIndexPort.Write(i);
+//         attributeControllerWritePort.Write(*(registers++));
+//     }
+//     attributeControllerResetPort.Read();
+//     attributeControllerIndexPort.Write(0x20);
+//
+// }
 bool VideoGraphicsArray::SupportsMode(
     uint32_t width,
     uint32_t height,
@@ -135,35 +191,76 @@ void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t colorIndex)
     *pixelAddress = colorIndex;
 }
 
+//(GPT)
+uint8_t VideoGraphicsArray::GetColorIndex(
+    uint8_t r, uint8_t g, uint8_t b)
+{
+    if (r == 0x00 && g == 0x00 && b == 0x00)
+        return 0x00; // Black
 
+    if (r == 0x00 && g == 0x00 && b == 0xA8)
+        return 0x01; // Blue
 
-uint8_t VideoGraphicsArray::GetColorIndex(uint8_t r, uint8_t g, uint8_t b){
-    if(r==0x00 && g==0x00 && b == 0xA8) return 0x00;  //black
-    if(r==0x00 && g==0x00 && b == 0xA8) return 0x01;  //blue
-    if(r==0x00 && g==0xA8 && b == 0x00) return 0x02;   // green
-    if(r==0xA8 && g==0x00 && b == 0x00) return 0x04;  // red
-    if(r==0xFF && g==0xFF && b == 0xFF) return 0x3F; //white
+    if (r == 0x00 && g == 0xA8 && b == 0x00)
+        return 0x02; // Green
+
+    if (r == 0xA8 && g == 0x00 && b == 0x00)
+        return 0x04; // Red
+
+    if (r == 0xFF && g == 0xFF && b == 0xFF)
+        return 0x3F; // White
+
     return 0x00;
 }
+
+
+//(YT) uint8_t VideoGraphicsArray::GetColorIndex(uint8_t r, uint8_t g, uint8_t b){
+//     if(r==0x00 && g==0x00 && b == 0xA8) return 0x00;  //black
+//     if(r==0x00 && g==0x00 && b == 0xA8) return 0x01;  //blue
+//     if(r==0x00 && g==0xA8 && b == 0x00) return 0x02;   // green
+//     if(r==0xA8 && g==0x00 && b == 0x00) return 0x04;  // red
+//     if(r==0xFF && g==0xFF && b == 0xFF) return 0x3F; //white
+//     return 0x00;
+// }
 
 void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t r, uint8_t g, uint8_t b)
 {
     PutPixel(x,y, GetColorIndex(r,g,b));
 }
+//(GPT)
 
-void VideoGraphicsArray::FillRectangle(uint32_t x, uint32_t y, uint32_t w,uint32_t h ,uint8_t r, uint8_t g, uint8_t b)
+void VideoGraphicsArray::FillRectangle(
+    uint32_t x, uint32_t y,
+    uint32_t w, uint32_t h,
+    uint8_t r, uint8_t g, uint8_t b)
 {
-
-    for(int32_t Y=y;Y<h+y; Y++)
+    for (uint32_t dy = 0; dy < h; ++dy)
     {
-        for(int32_t X=x; X<x+w; X++)
+        for (uint32_t dx = 0; dx < w; ++dx)
         {
-            PutPixel(X,Y,r,g,b); //blue color screen
+            if (x + dx >= 320 || y + dy >= 200)
+                continue;
+
+            PutPixel(x + dx, y + dy, r, g, b);
         }
     }
-
 }
 
+
+
+//(YT) void VideoGraphicsArray::FillRectangle(uint32_t x, uint32_t y, uint32_t w,uint32_t h ,uint8_t r, uint8_t g, uint8_t b)
+// {
+//
+//     for(int32_t Y=y;Y<h+y; Y++)
+//     {
+//         for(int32_t X=x; X<x+w; X++)
+//         {
+//
+//             PutPixel(X,Y,r,g,b); //blue color screen
+//         }
+//     }
+//
+// }
 
 
 

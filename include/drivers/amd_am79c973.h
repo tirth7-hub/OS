@@ -18,7 +18,7 @@ namespace MarkOS
                 common::uint16_t mode;
                 unsigned reserved1 : 4;
                 unsigned numSendBuffers : 4;
-                unsigned reserve3d2 : 4;
+                unsigned reserved2 : 4;
                 unsigned  numRecvBuffers : 4;
                 common::uint64_t physicalAddress : 48;
                 common::uint16_t reserved3;
@@ -64,8 +64,7 @@ namespace MarkOS
 
 
         public:
-            amd_am79c973(PeripheralComponentInterconnectDeviceDescriptor dev, InterruptManager* interrupts);
-
+            amd_am79c973(MarkOS::hardwarecommunication::PeripheralComponentInterconnectDeviceDescriptor *dev,MarkOS::hardwarecommunication::InterruptManager* interrupts);
             ~amd_am79c973();
 
             void Activate();
