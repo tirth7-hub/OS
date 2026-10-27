@@ -7,11 +7,12 @@
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
 #include <drivers/vga.h>
+#include <drivers/ata.h>
 #include <gui/desktop.h>
 #include <gui/window.h>
 #include <multitasking.h>
 
-
+#include <drivers/amd_am79c973.h>
 //#define GRAPHICSMODE
 
 
@@ -228,22 +229,31 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
   desktop.AddChild(&win2);
   #endif
 
-  //gpt
-  VideoGraphicsArray vga;
 
-  if (!vga.SetMode(320, 200, 8))
-  {
-    printf("Failed to set VGA mode\n");
-    while (1) {}
-  }
+  printf("\nS-ATA primary master: ");
+  AdvancedTechnologyAttachment ata0m(true, 0x1F0);
+  ata0m.Identify();
 
-  // Draw a solid blue screen directly.
-  vga.FillRectangle(0, 0, 320, 200, 0, 0, 0xA8);
+  printf("\nS-ATA primary slave: ");
+  AdvancedTechnologyAttachment ata0s(false, 0x1F0);
+  ata0s.Identify();
+  ata0s.Write28(0, (uint8_t*)"MarkOS", 25);
+  ata0s.Flush();
+  ata0s.Read28(0);
 
-  while (1)
-  {
-  }
+  printf("\nS-ATA secondary master: ");
+  AdvancedTechnologyAttachment ata1m(true, 0x170);
+  ata1m.Identify();
 
+  printf("\nS-ATA secondary slave: ");
+  AdvancedTechnologyAttachment ata1s(false, 0x170);
+  ata1s.Identify();
+
+  // third: 0x1E8
+  // fourth: 0x168
+
+  // amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
+  // eth0->Send((uint8_t*)"hello Network", 13);
 
 
   interrupts.Activate();
