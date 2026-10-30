@@ -9,6 +9,7 @@
 #include <drivers/vga.h>
 #include <drivers/ata.h>
 #include <gui/desktop.h>
+#include <gui/render.h>
 #include <gui/window.h>
 #include <multitasking.h>
 
@@ -213,9 +214,11 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
 
   PeripheralComponentInterconnectController PCIController;
   PCIController.SelectDrivers(&drvManager, &interrupts);
+  #ifdef GRAPHICSMODE
+  VideoGraphicsArray vga;
 
-  //VideoGraphicsArray vga;
-
+  Render rend(320,200);   //arguments do nothing for now. 320,200 is hardcoded into "gui/render.h"
+  #endif
   printf("Initializing Hardware, Stage 2\n");
   drvManager.ActivateAll();
 
@@ -261,7 +264,13 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
   while(1)
   {
     #ifdef GRAPHICSMODE
-    desktop.Draw(&vga);
+    // desktop.Draw(&vga);
+
+    //render new frame
+    desktop.Draw(&rend);
+
+    //display rendered frame
+    rend.display(&vga);
     #endif
   }
 }

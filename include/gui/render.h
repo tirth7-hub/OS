@@ -5,6 +5,7 @@
 #include <common/graphicscontext.h>
 
 namespace MarkOS{
+
     namespace gui{
 
         class Pixel{
@@ -20,13 +21,11 @@ namespace MarkOS{
 
         public:
             Render(
-                common::int32_t w, common::int32_t h
-            );
-
+                common::int32_t w, common::int32_t h);
             ~Render();
 
-            void display(common::GraphicsContext* gc);
 
+            void display(common::GraphicsContext* gc);
             void PutPixel(MarkOS::common::int32_t x, MarkOS::common::int32_t y, MarkOS::common::uint8_t r, MarkOS::common::uint8_t g, MarkOS::common::uint8_t b);
         };
     }

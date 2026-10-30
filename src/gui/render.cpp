@@ -5,29 +5,28 @@ using namespace common;
 using namespace gui;
 
 
-//> class Pixel{
-//> public:
+// class Pixel{
+// public:
 // uint8_t r,
 // uint8_t g,
 // uint8_t b
-//<
 
 
-//<> class Render : public MarkOS::drivers::VideoGraphicsArray{
-//> private:
+// class Render : public MarkOS::drivers::VideoGraphicsArray{
+// private:
 // Pixel[][] pixels;
 
-//<> public:
+// public:
 
 //constructor
-Render::Render(
-    common::int32_t w, common::int32_t h
-){
+Render::Render(common::int32_t w, common::int32_t h)
+{
     // Pixel[w][h] pixels;
 }
 
 //destructor
-Render::~Render(){
+Render::~Render()
+{
 
 }
 
@@ -45,5 +44,3 @@ void Render::PutPixel(int32_t x, int32_t y, uint8_t r, uint8_t g, uint8_t b){
     pixels[x][y].g = g;
     pixels[x][y].b = b;
 }
-//<
-//<
