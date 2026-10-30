@@ -97,6 +97,8 @@ namespace MarkOS
             //static void HandleInterruptRequest0x48();
             //static void HandleInterruptRequest0x4D();
 
+
+
             static void HandleInterruptRequest0x45();
             static void HandleInterruptRequest0x47();
             static void HandleInterruptRequest0x48();
@@ -111,6 +113,8 @@ namespace MarkOS
             static void HandleInterruptRequest0x4E();
             static void HandleInterruptRequest0x4A();
             static void HandleInterruptRequest0x37();
+
+            static void HandleInterruptRequest0x80();
 
             static void HandleException0x00();
             static void HandleException0x01();

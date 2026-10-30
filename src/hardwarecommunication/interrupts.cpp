@@ -119,6 +119,8 @@ programmableInterruptControllerSlaveDataPort(0xA1)
     SetInterruptDescriptorTableEntry(hardwareInterruptOffset + 0x0F, CodeSegment, &HandleInterruptRequest0x0F, 0, IDT_INTERRUPT_GATE);
     SetInterruptDescriptorTableEntry(hardwareInterruptOffset + 0x32, CodeSegment, &HandleInterruptRequest0x31, 0, IDT_INTERRUPT_GATE);
 
+    SetInterruptDescriptorTableEntry(0x80, CodeSegment, &HandleInterruptRequest0x31, 0, IDT_INTERRUPT_GATE);
+
     programmableInterruptControllerMasterCommandPort.Write(0x11);
     programmableInterruptControllerSlaveCommandPort.Write(0x11);
 
